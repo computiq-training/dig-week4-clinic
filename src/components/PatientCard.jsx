@@ -1,7 +1,9 @@
 const PCard = (props)=>{
+    
     console.log(props)
     const patient = props.data
-    return <div className="card-bg">
+    let cls = patient.gender == 'm'?'bg-blue':'bg-pink';
+    return <div className={cls}>
         <p>{patient.full_name}</p>
         <p>{patient.gender}</p>
         <p>{patient.phone}</p>
