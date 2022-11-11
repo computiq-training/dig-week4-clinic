@@ -24,7 +24,7 @@ const PATIENTS = [
     }
 ];
 const Patients =  (props)=>{
-    const [patients, setPatients] = useState(null)
+    const [patients, setPatients] = useState(PATIENTS)
     const [fullName , setFullName] = useState('')
     const [gender, setGender] = useState('m')
     const addNew = ()=>{
