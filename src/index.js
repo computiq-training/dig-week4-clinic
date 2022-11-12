@@ -3,11 +3,40 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Patients from './components/FPatients';
+import History from './pages/history';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route
+} from 'react-router-dom'
+import Layout from './pages/layout';
+import Patient from './pages/patient';
 
+const router = createBrowserRouter([
+  {
+    path:'/',
+    element:<Layout/>,
+    children:[
+          {
+            path:'patients',
+            element:<Patients/>
+          },
+          {
+            path:'history',
+            element:<History/>
+          },
+          {
+            path:'patients/:id',
+            element:<Patient/>
+          }
+    ]
+  }
+]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}/>
   </React.StrictMode>
 );
 
