@@ -8,6 +8,7 @@ import {
   RouterProvider
 
 } from 'react-router-dom'
+import {ThemeProvider, THEMES} from './contexts/ThemeContext'
 import {Login} from './pages/login'
 import Patients from './pages/patients';
 import History from './pages/history'
@@ -42,7 +43,11 @@ const router = createBrowserRouter([
  const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <ThemeProvider theme={{
+      ...THEMES.light
+    }}>
+      <RouterProvider router={router}/>
+    </ThemeProvider>
   </React.StrictMode>
 );
 

@@ -71,11 +71,35 @@ const Patients =  (props)=>{
         <input type="submit"/>
     </form>
     {
-        patients?patients.map((item,index)=>{
-            return <PCard key={index} data={item}/>
-           })
-           :
-           <p>No Data</p>
+        // patients?patients.map((item,index)=>{
+        //     return <PCard key={index} data={item}/>
+        //    })
+        //    :
+        //    <p>No Data</p>
+        <table className="w-full border-collapse border border-slate-400">
+  <thead>
+    <tr>
+      <th className="border border-slate-300">ID</th>
+      <th className="border border-slate-300">Full Name</th>
+      <th className="border border-slate-300">Birth Date</th>
+      <th className="border border-slate-300">Phone</th>
+      <th className="border border-slate-300">Gender</th>
+    </tr>
+  </thead>
+  <tbody>
+        {
+            patients && patients.map((item, index)=>{
+                return <tr>
+                <td className="border border-slate-300">{item.id}</td>
+                <td className="border border-slate-300">{item.full_name}</td>
+                <td className="border border-slate-300">{item.birth_date}</td>
+                <td className="border border-slate-300">{item.phone}</td>
+                <td className="border border-slate-300">{item.gender}</td>
+              </tr>
+            })
+        }
+  </tbody>
+</table>
     }
 </div>
 }
