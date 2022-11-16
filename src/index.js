@@ -14,7 +14,7 @@ import Patients from './pages/patients';
 import History from './pages/history'
 import Layout from './pages/layout';
 import { Patient } from './pages/Patient';
-
+import SnackbarProvider from 'react-simple-snackbar'
 const router = createBrowserRouter([
   {
     path:'/',
@@ -46,7 +46,10 @@ root.render(
     <ThemeProvider theme={{
       ...THEMES.light
     }}>
-      <RouterProvider router={router}/>
+      <SnackbarProvider>
+         <RouterProvider router={router}/>
+      </SnackbarProvider>
+     
     </ThemeProvider>
   </React.StrictMode>
 );
