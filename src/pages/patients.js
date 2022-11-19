@@ -1,6 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect,useContext } from "react"
 import PCard from "../components/PatientCard";
 import { useSnackbar } from 'react-simple-snackbar'
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 
 const PATIENTS = [
@@ -49,8 +51,9 @@ const Patients =  (props)=>{
     const [birthDate,setBirthDate] = useState(new Date())
     const [gender, setGender] = useState('m')
     const [searchValue,setSearchValue] = useState('')
-
-
+    const authContext = useContext(AuthContext)
+    const {user,isAuth} = authContext;
+    console.log('user data from auth context is ',user,isAuth)
     const addNew = ()=>{
         if(!fullName || !phone || !birthDate || !gender)
         {
@@ -137,6 +140,13 @@ const Patients =  (props)=>{
         setPatients([...temp])
         setFilteredPatients([...temp])
     }
+    useEffect(() => {
+        
+        // const isAuth = localStorage.getItem('userData')
+        // console.log('user data in p ',isAuth)
+    }, []);
+   
+
     return <div>
         
     

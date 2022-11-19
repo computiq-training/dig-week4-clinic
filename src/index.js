@@ -15,10 +15,14 @@ import History from './pages/history'
 import Layout from './pages/layout';
 import { Patient } from './pages/Patient';
 import SnackbarProvider from 'react-simple-snackbar'
+import { AuthProvider } from './contexts/AuthContext';
+import { Guard } from './components/GuardComponent';
 const router = createBrowserRouter([
   {
     path:'/',
-    element:<Layout/>,
+    element:<Guard>
+      <Layout/>
+    </Guard>,
     children:[
       {
         path:'patients',
@@ -37,6 +41,10 @@ const router = createBrowserRouter([
   {
     path:'/login',
     element:<Login/>
+  },
+  {
+    path:'/about',
+    element:<h>About</h>
   }
   
 ])
@@ -47,7 +55,9 @@ root.render(
       ...THEMES.light
     }}>
       <SnackbarProvider>
-         <RouterProvider router={router}/>
+         <AuthProvider>
+          <RouterProvider router={router}/>
+         </AuthProvider>
       </SnackbarProvider>
      
     </ThemeProvider>
