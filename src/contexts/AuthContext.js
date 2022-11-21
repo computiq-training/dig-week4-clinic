@@ -1,4 +1,5 @@
 import axios from "axios";
+import {URL} from '../constants/web_service'
 import { createContext,useState,useEffect } from "react";
 const defaultValue = {
     isAuth:false,
@@ -12,28 +13,43 @@ export const AuthContext = createContext(defaultValue)
 export const AuthProvider = ({children})=>{
     const [userData, setUserData] = useState(null);
     const [isUserAuth, setIsUserAuth] = useState(false);
-
     useEffect(() => {
-        const data = localStorage.getItem('userData')
+        const data = JSON.parse(localStorage.getItem('userData'))
         if(data)
         {
-            setIsUserAuth(true)
-            setUserData(data)
+            if(data.token)
+            {
+                console.log('tken found and added as default')
+                setIsUserAuth(true)
+                setUserData(data)
+                axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
+                
+            }
+            else{
+                delete axios.defaults.headers.common.Authorization;
+            }
+           
+        }
+        else{
+                delete axios.defaults.headers.common.Authorization;
         }
 
     }, []);
     const loginFun =  (username, password)=>{
-        console.log('login triggered')
-        axios.post('http://127.0.0.1:5000/api/v1/auth/signin',{
+        axios.post(`${URL}auth/signin`,{
             username:username,
             password:password
         })
         .then((res)=>{
             console.log(res)
-            localStorage.setItem('userData',res.data)
+            localStorage.setItem('userData',JSON.stringify(res.data.data))
             setIsUserAuth(true);
-            setUserData(res.data)
-            console.log('state updated')
+            setUserData(res.data.data)
+            //setJwtToken(res.data.token)
+            console.log(res.data)
+            console.log('oken saved as default in axios is ',res.data.token)
+            axios.defaults.headers.common.Authorization = `Bearer ${res.data.token}`;
+
         })
         .catch((e=>{
             console.log('Error')

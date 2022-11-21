@@ -3,6 +3,10 @@ import PCard from "../components/PatientCard";
 import { useSnackbar } from 'react-simple-snackbar'
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import {URL} from '../constants/web_service'
+
+import axios from "axios";
+import { PatientService } from "../services/PatientsService/PatientService";
 
 
 const PATIENTS = [
@@ -43,8 +47,8 @@ const options = {
     },
   }
 const Patients =  (props)=>{
-    const [patients, setPatients] = useState(PATIENTS)
-    const [filteredPatients, setFilteredPatients] = useState(PATIENTS)
+    const [patients, setPatients] = useState([])
+    const [filteredPatients, setFilteredPatients] = useState([])
     const [open,close] = useSnackbar(options)
     const [fullName , setFullName] = useState('')
     const [phone,setPhone] = useState('')
@@ -53,6 +57,7 @@ const Patients =  (props)=>{
     const [searchValue,setSearchValue] = useState('')
     const authContext = useContext(AuthContext)
     const {user,isAuth} = authContext;
+
     console.log('user data from auth context is ',user,isAuth)
     const addNew = ()=>{
         if(!fullName || !phone || !birthDate || !gender)
@@ -61,18 +66,63 @@ const Patients =  (props)=>{
             open('Please fill all the info')
             return;
         }
-        let pTemp = !patients?[]:patients
-        pTemp.push({
-            id:4,
+        // axios.post(`${URL}patients`,{
+        //     full_name:fullName,
+        //     birth_date:birthDate,
+        //     phone:phone,
+        //     code:"801",
+        //     gender:gender
+        // }
+        // )
+        // .then((r)=>{
+        //   console.log('response is :',r)
+        //     l  et pTemp = !patients?[]:patients
+        //     pTemp.push({
+        //             id:r.data.data._id,
+        //             full_name:fullName,
+        //             birth_date:birthDate,
+        //             gender:gender,
+        //             phone:phone
+        //     })
+
+        // setPatients([...pTemp])
+        // setFilteredPatients([...pTemp])
+        // reset();
+        // })
+        // .catch((e)=>{
+        //     console.log('Error occured')
+        //     console.error(e)
+        // })
+        let data = {
+                full_name:fullName,
+                birth_date:birthDate,
+                phone:phone,
+                code:"801",
+                gender:gender
+            };
+        (new PatientService('patients').create(data))
+        .then((r)=>{
+            console.log('created')
+              console.log('response is :',r)
+            let pTemp = !patients?[]:patients
+            pTemp.push({
+                    id:r.data.data._id,
                     full_name:fullName,
                     birth_date:birthDate,
                     gender:gender,
                     phone:phone
-        })
+            })
 
         setPatients([...pTemp])
         setFilteredPatients([...pTemp])
         reset();
+        })
+        .catch((err)=>{
+            console.log('error')
+            console.error(err)
+        })
+        
+        
     }
 
     const changeFullName = (e)=>{
@@ -127,21 +177,66 @@ const Patients =  (props)=>{
 
     }
     const deleteRow = (id)=>{
-        let temp = patients;
-        console.log(id,'deleted')
-        let index = temp.findIndex((item)=>{
-            return item.id === id
+        
+        // axios.delete(`${URL}patients/${id}`)
+        // .then((r)=>{
+        //     let temp = patients;
+        //     console.log(id,'deleted')
+        //     let index = temp.findIndex((item)=>{
+        //         return item.id === id
+        //     })
+        //     console.log('index,',index)
+        //     console.log('length before',temp.length)
+        //     temp.splice(index,1)
+        //     console.log('length after',temp.length)
+    
+        //     setPatients([...temp])
+        //     setFilteredPatients([...temp])
+        // })
+        // .catch((e)=>{
+        //     console.log(e)
+        // })
+        (new PatientService('patients').delete(id))
+        .then((r)=>{
+                let temp = patients;
+            console.log(id,'deleted')
+            let index = temp.findIndex((item)=>{
+                return item.id === id
+            })
+            console.log('index,',index)
+            console.log('length before',temp.length)
+            temp.splice(index,1)
+            console.log('length after',temp.length)
+    
+            setPatients([...temp])
+            setFilteredPatients([...temp])
         })
-        console.log('index,',index)
-        console.log('length before',temp.length)
-        temp.splice(index,1)
-        console.log('length after',temp.length)
-
-        setPatients([...temp])
-        setFilteredPatients([...temp])
+        .catch((err)=>{
+            console.log('error ')
+            console.error(err)
+        })
+        
     }
     useEffect(() => {
-        
+        // axios.get(`${URL}patients`)
+        // .then((r)=>{
+        //    setPatients(r.data.data)
+        //    setFilteredPatients(r.data.data)
+
+        // })
+        // .catch((e=>{
+        //     console.log('error occured')
+        //     console.error(e)
+        // }))
+        (new PatientService('patients')).all()
+        .then((r)=>{
+            console.log('esponse',r)
+                 setPatients(r.data.data)
+           setFilteredPatients(r.data.data)
+
+        }).catch((e)=>{
+            console.error(e)
+        })
         // const isAuth = localStorage.getItem('userData')
         // console.log('user data in p ',isAuth)
     }, []);
@@ -183,12 +278,12 @@ const Patients =  (props)=>{
         {
             filteredPatients && filteredPatients.map((item, index)=>{
                 return <tr>
-                <td className="border border-slate-300">{item.id}</td>
+                <td className="border border-slate-300">{item._id}</td>
                 <td className="border border-slate-300">{item.full_name}</td>
                 <td className="border border-slate-300">{item.birth_date}</td>
                 <td className="border border-slate-300">{item.phone}</td>
                 <td className="border border-slate-300">{item.gender}</td>
-                <td className="border border-slate-300"><button className="bg-red-300 p-1" onClick={()=>deleteRow(item.id)}>DELETE</button></td>
+                <td className="border border-slate-300"><button className="bg-red-300 p-1" onClick={()=>deleteRow(item._id)}>DELETE</button></td>
 
               </tr>
             })
