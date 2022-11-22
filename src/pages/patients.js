@@ -3,31 +3,9 @@ import PCard from "../components/PatientCard";
 import { useSnackbar } from 'react-simple-snackbar'
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import axios from "axios";
+import {URL} from '../constants/web_service'
 
-
-const PATIENTS = [
-    {
-        id:1,
-        full_name:"Ali Ahmed",
-        birth_date:"10/10/1999",
-        gender:"m",
-        phone:"+96477889654"
-    },
-    {
-        id:2,
-        full_name:"Ameer Saad",
-        birth_date:"10/10/2000",
-        gender:"m",
-        phone:"+96477809654"
-    },
-    {
-        id:3,
-        full_name:"Muna Ali",
-        birth_date:"10/10/1998",
-        gender:"f",
-        phone:"+964777809654"
-    }
-];
 const options = {
     position: 'bottom-right',
     style: {
@@ -43,8 +21,8 @@ const options = {
     },
   }
 const Patients =  (props)=>{
-    const [patients, setPatients] = useState(PATIENTS)
-    const [filteredPatients, setFilteredPatients] = useState(PATIENTS)
+    const [patients, setPatients] = useState([])
+    const [filteredPatients, setFilteredPatients] = useState([])
     const [open,close] = useSnackbar(options)
     const [fullName , setFullName] = useState('')
     const [phone,setPhone] = useState('')
@@ -52,7 +30,8 @@ const Patients =  (props)=>{
     const [gender, setGender] = useState('m')
     const [searchValue,setSearchValue] = useState('')
     const authContext = useContext(AuthContext)
-    const {user,isAuth} = authContext;
+    const {user,isAuth,jwtToken} = authContext;
+    console.log('token passed:',jwtToken)
     console.log('user data from auth context is ',user,isAuth)
     const addNew = ()=>{
         if(!fullName || !phone || !birthDate || !gender)
@@ -61,18 +40,31 @@ const Patients =  (props)=>{
             open('Please fill all the info')
             return;
         }
-        let pTemp = !patients?[]:patients
-        pTemp.push({
-            id:4,
+        axios.post(`${URL}patients`,{
                     full_name:fullName,
                     birth_date:birthDate,
                     gender:gender,
-                    phone:phone
+                    phone:phone,
+                    code:'1'
         })
+        .then((res)=>{
+            console.log('response ',res)
+            let pTemp = !patients?[]:patients
+                pTemp.push({
+                    _id:res.data.data._id,
+                            full_name:fullName,
+                            birth_date:birthDate,
+                            gender:gender,
+                            phone:phone
+                })
 
         setPatients([...pTemp])
         setFilteredPatients([...pTemp])
         reset();
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
     }
 
     const changeFullName = (e)=>{
@@ -127,10 +119,13 @@ const Patients =  (props)=>{
 
     }
     const deleteRow = (id)=>{
-        let temp = patients;
+        axios.delete(`${URL}patients/${id}`,)
+        .then((res)=>{
+            console.log('response after deletion',res)
+            let temp = patients;
         console.log(id,'deleted')
         let index = temp.findIndex((item)=>{
-            return item.id === id
+            return item._id === id
         })
         console.log('index,',index)
         console.log('length before',temp.length)
@@ -139,11 +134,21 @@ const Patients =  (props)=>{
 
         setPatients([...temp])
         setFilteredPatients([...temp])
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
     }
     useEffect(() => {
-        
-        // const isAuth = localStorage.getItem('userData')
-        // console.log('user data in p ',isAuth)
+        axios.get(`${URL}patients`)
+        .then((res)=>{
+            console.log('response is ',res)
+            setPatients(res.data.data)
+            setFilteredPatients(res.data.data)
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
     }, []);
    
 
@@ -183,12 +188,12 @@ const Patients =  (props)=>{
         {
             filteredPatients && filteredPatients.map((item, index)=>{
                 return <tr>
-                <td className="border border-slate-300">{item.id}</td>
+                <td className="border border-slate-300">{item._id}</td>
                 <td className="border border-slate-300">{item.full_name}</td>
                 <td className="border border-slate-300">{item.birth_date}</td>
                 <td className="border border-slate-300">{item.phone}</td>
                 <td className="border border-slate-300">{item.gender}</td>
-                <td className="border border-slate-300"><button className="bg-red-300 p-1" onClick={()=>deleteRow(item.id)}>DELETE</button></td>
+                <td className="border border-slate-300"><button className="bg-red-300 p-1" onClick={()=>deleteRow(item._id)}>DELETE</button></td>
 
               </tr>
             })
