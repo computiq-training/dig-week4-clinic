@@ -17,9 +17,9 @@ export const AuthProvider = ({children})=>{
         const data = JSON.parse(localStorage.getItem('userData'))
         if(data)
         {
-            if(data.token)
+            if(data.token && isValidToken(data.token))
             {
-                console.log('tken found and added as default')
+                console.log('token found and added as default')
                 setIsUserAuth(true)
                 setUserData(data)
                 axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
@@ -35,6 +35,17 @@ export const AuthProvider = ({children})=>{
         }
 
     }, []);
+
+    // token decoding and validation functions
+  const isValidToken = (accessToken) => {
+  
+    if (!accessToken) {
+      return false;
+    }
+    const decoded = jwtDecode(accessToken);
+    const currentTime = Date.now() / 1000;
+    return decoded.exp > currentTime;
+  };
     const loginFun =  (username, password)=>{
         axios.post(`${URL}auth/signin`,{
             username:username,
