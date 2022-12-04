@@ -63,7 +63,7 @@ const Patients =  (props)=>{
         if(!fullName || !phone || !birthDate || !gender)
         {
             // alert('Please fill all the info')
-            open('Please fill all the info')
+            //open('Please fill all the info')
             return;
         }
         // axios.post(`${URL}patients`,{

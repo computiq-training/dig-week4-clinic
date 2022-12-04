@@ -1,12 +1,15 @@
 import axios from "axios";
 import {URL} from '../constants/web_service'
 import { createContext,useState,useEffect } from "react";
+import jwt_decode from "jwt-decode";
+
 const defaultValue = {
     isAuth:false,
     user:null,
     login:()=>Promise.resolve(),
     logout: ()=>{}
 }
+
 export const AuthContext = createContext(defaultValue)
 
 
@@ -42,7 +45,7 @@ export const AuthProvider = ({children})=>{
     if (!accessToken) {
       return false;
     }
-    const decoded = jwtDecode(accessToken);
+    const decoded = jwt_decode(accessToken);
     const currentTime = Date.now() / 1000;
     return decoded.exp > currentTime;
   };
