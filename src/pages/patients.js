@@ -1,6 +1,6 @@
 import { useState, useEffect,useContext } from "react"
 import PCard from "../components/PatientCard";
-import { useSnackbar } from 'react-simple-snackbar'
+// import { useSnackbar } from 'react-simple-snackbar'
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import {URL} from '../constants/web_service'
@@ -49,7 +49,7 @@ const options = {
 const Patients =  (props)=>{
     const [patients, setPatients] = useState([])
     const [filteredPatients, setFilteredPatients] = useState([])
-    const [open,close] = useSnackbar(options)
+    // const [open,close] = useSnackbar(options)
     const [fullName , setFullName] = useState('')
     const [phone,setPhone] = useState('')
     const [birthDate,setBirthDate] = useState(new Date())
